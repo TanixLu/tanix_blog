@@ -52,12 +52,14 @@ fn upload_to_aliyun(zip_base64: &str) -> anyhow::Result<()> {
     let aliyun_id = std::env::var("ALIYUN_ID")?;
     let aliyun_access_key_id = std::env::var("ALIYUN_ACCESS_KEY_ID")?;
     let aliyun_access_key_secret = std::env::var("ALIYUN_ACCESS_KEY_SECRET")?;
+    let aliyun_region = std::env::var("ALIYUN_REGION")?;
+    let aliyun_fc_name = std::env::var("ALIYUN_FC_NAME")?;
     fc_upload(
         &aliyun_id,
         &aliyun_access_key_id,
         &aliyun_access_key_secret,
-        "cn-hangzhou",
-        "blog",
+        &aliyun_region,
+        &aliyun_fc_name,
         zip_base64,
     )
 }
