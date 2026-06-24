@@ -81,10 +81,14 @@ def zip2base64(path_list: List[Path]) -> str:
             else:
                 _add_file(zf, path, path.name)
 
-    return b64encode(zip_buffer.getvalue()).decode()
+    zip_bytes = zip_buffer.getvalue()
+    with open("output.zip", "wb") as f:
+        f.write(zip_bytes)
+
+    return b64encode(zip_bytes).decode()
 
 
-def fc_upload(path_list: List[Path], region: str, function_name: str) -> None:
+def fc_upload(region: str, function_name: str, zip_base64: str) -> None:
     config = open_api_models.Config(
         access_key_id=access_key_id,
         access_key_secret=access_key_secret,
@@ -106,9 +110,7 @@ def fc_upload(path_list: List[Path], region: str, function_name: str) -> None:
         req_body_type="json",
         body_type="json",
     )
-    request = open_api_models.OpenApiRequest(
-        body={"code": {"zipFile": zip2base64(path_list)}}
-    )
+    request = open_api_models.OpenApiRequest(body={"code": {"zipFile": zip_base64}})
 
     open_api_client.call_api(params, request, runtime)
 
@@ -121,18 +123,17 @@ def main() -> None:
         "--target",
         "x86_64-unknown-linux-musl",
     ])
-    print("Build completed successfully.")
+    print("Server binary built successfully.")
+
+    zip_base64 = zip2base64([
+        Path("target/x86_64-unknown-linux-musl/release/tanix_blog"),
+        Path("public"),
+    ])
+    print("ZIP file created successfully.")
 
     if len(sys.argv) > 1 and sys.argv[1] == "u":
-        fc_upload(
-            [
-                Path("target/x86_64-unknown-linux-musl/release/tanix_blog"),
-                Path("public"),
-            ],
-            "cn-hangzhou",
-            "blog",
-        )
-        print("Upload completed successfully.")
+        fc_upload("cn-hangzhou", "blog", zip_base64)
+        print("Function updated successfully.")
 
 
 if __name__ == "__main__":
