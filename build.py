@@ -8,6 +8,7 @@ from io import BytesIO
 from base64 import b64encode
 import os
 import subprocess
+import sys
 
 from alibabacloud_tea_openapi.client import Client as OpenApiClient
 from alibabacloud_tea_openapi import models as open_api_models
@@ -122,15 +123,16 @@ def main() -> None:
     ])
     print("Build completed successfully.")
 
-    fc_upload(
-        [
-            Path("target/x86_64-unknown-linux-musl/release/tanix_blog"),
-            Path("public"),
-        ],
-        "cn-hangzhou",
-        "blog",
-    )
-    print("Upload completed successfully.")
+    if len(sys.argv) > 1 and sys.argv[1] == "u":
+        fc_upload(
+            [
+                Path("target/x86_64-unknown-linux-musl/release/tanix_blog"),
+                Path("public"),
+            ],
+            "cn-hangzhou",
+            "blog",
+        )
+        print("Upload completed successfully.")
 
 
 if __name__ == "__main__":
