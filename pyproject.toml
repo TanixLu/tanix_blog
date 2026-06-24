@@ -1,0 +1,7 @@
+[project]
+name = "tanix-blog"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = ["alibabacloud-tea-openapi>=0.4.4"]
