@@ -30,13 +30,15 @@ async fn redirect_www(req: Request, next: Next) -> Response {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .fallback_service(
             ServeDir::new("public").not_found_service(ServeFile::new("public/404.html")),
         )
         .layer(middleware::from_fn(redirect_www));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:9000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:9000").await?;
+    axum::serve(listener, app).await?;
+
+    Ok(())
 }
