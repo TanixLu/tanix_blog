@@ -1,12 +1,12 @@
 use std::fs;
 use std::io::{Cursor, Write};
-use std::path::PathBuf;
+use std::path::Path;
 
 use walkdir::WalkDir;
 use zip::write::SimpleFileOptions;
 use zip::{CompressionMethod, ZipWriter};
 
-pub fn unix_zip(paths: &[PathBuf]) -> anyhow::Result<Vec<u8>> {
+pub fn unix_zip(paths: &[impl AsRef<Path>]) -> anyhow::Result<Vec<u8>> {
     let mut buf = Vec::new();
     {
         let mut zw = ZipWriter::new(Cursor::new(&mut buf));
@@ -16,6 +16,7 @@ pub fn unix_zip(paths: &[PathBuf]) -> anyhow::Result<Vec<u8>> {
             .unix_permissions(0o755);
 
         for path in paths {
+            let path = path.as_ref();
             if path.is_dir() {
                 let parent = path.parent().unwrap();
                 for e in WalkDir::new(path).sort_by_file_name() {

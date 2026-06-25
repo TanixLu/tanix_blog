@@ -3,6 +3,8 @@ resolver = "2"
 members = ["server", "ssg"]
 
 [workspace.dependencies]
+anyhow = "1.0.102"
+
 axum = "0.8.9"
 tokio = { version = "1.52.3", features = ["full"] }
 tower-http = { version = "0.7.0", features = ["fs"] }
@@ -12,7 +14,6 @@ reqwest = { version = "0.13.4", default-features = false, features = [
     "rustls",
     "json",
 ] }
-anyhow = "1.0.102"
 dotenvy = "0.15.7"
 sha2 = "0.11.0"
 hmac = "0.13.0"
@@ -22,3 +23,4 @@ chrono = "0.4.45"
 zip = "8.6.0"
 base64 = "0.22.1"
 walkdir = "2.5.0"
+comrak = "0.52.0"
