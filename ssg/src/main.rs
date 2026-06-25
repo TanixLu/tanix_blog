@@ -49,10 +49,11 @@ fn build_html() -> anyhow::Result<()> {
 
     copy_dir(COMMON_PATH, PUBLIC_PATH)?;
 
-    let markdown = std::fs::read_to_string("posts/markdown_test.md")?;
+    let markdown = std::fs::read_to_string("blog/posts/test.md")?;
     let options = comrak::Options::default();
     let html = comrak::markdown_to_html(&markdown, &options);
-    std::fs::write("public/markdown_test.html", &html)?;
+    std::fs::create_dir_all("public/posts")?;
+    std::fs::write("public/posts/test.html", &html)?;
 
     println!(
         "HTML built successfully, {}.",
