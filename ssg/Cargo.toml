@@ -16,3 +16,6 @@ zip.workspace = true
 base64.workspace = true
 walkdir.workspace = true
 comrak.workspace = true
+tera.workspace = true
+constcat.workspace = true
+serde.workspace = true

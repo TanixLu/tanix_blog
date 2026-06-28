@@ -1,11 +1,36 @@
 use axum::{
     Router,
     extract::Request,
-    http::header,
+    http::{Uri, header},
     middleware::{self, Next},
     response::{IntoResponse, Redirect, Response},
 };
 use tower_http::services::{ServeDir, ServeFile};
+
+/// Rewrite extensionless paths (e.g. `/about`) to their `.html` file
+/// (`/about.html`) so a clean URL serves the same page as the file.
+async fn rewrite_path(mut req: Request, next: Next) -> Response {
+    let path = req.uri().path();
+
+    // Skip the root, any directory request (trailing `/`), and anything
+    // that already has an extension in its last segment (e.g. `.html`,
+    // `.css`, `.png`).
+    let last_segment = path.rsplit('/').next().unwrap_or("");
+    let needs_rewrite = path != "/" && !path.ends_with('/') && !last_segment.contains('.');
+
+    if needs_rewrite {
+        let query = req
+            .uri()
+            .query()
+            .map(|q| format!("?{q}"))
+            .unwrap_or_default();
+        if let Ok(uri) = format!("{path}.html{query}").parse::<Uri>() {
+            *req.uri_mut() = uri;
+        }
+    }
+
+    next.run(req).await
+}
 
 /// Redirect any request whose Host starts with `www.` to the bare domain.
 async fn redirect_www(req: Request, next: Next) -> Response {
@@ -35,6 +60,7 @@ async fn main() -> anyhow::Result<()> {
         .fallback_service(
             ServeDir::new("public").not_found_service(ServeFile::new("public/404.html")),
         )
+        .layer(middleware::from_fn(rewrite_path))
         .layer(middleware::from_fn(redirect_www));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:9000").await?;

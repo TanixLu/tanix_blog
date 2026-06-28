@@ -24,3 +24,6 @@ zip = { version = "8.6.0", default-features = false }
 base64 = "0.22.1"
 walkdir = "2.5.0"
 comrak = { version = "0.52.0", default-features = false }
+tera = { version = "2.0.0", default-features = false, features = ["glob_fs"] }
+constcat = "0.6.1"
+serde = { version = "1.0.228", features = ["derive"] }
